@@ -32,7 +32,7 @@ async def publish_emote():
     chart = cg.get_coin_market_chart_by_id(config['crypto'], "usd", 1)['prices']
     channels = await get_channels()
     for channel in channels:
-        if chart[-1][1] > chart[-2][1]:
+        if chart[-1][1] > chart[-12][1]:
             await channel.send("📈")
         else:
             await channel.send("📉")
