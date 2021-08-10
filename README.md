@@ -1,4 +1,4 @@
-nonsense project i made as a meme
+nonsense project i made as a meme\
 the bot will publish one of 2 emotes every hour in all channels inside its `config.yaml` depending on the last 2 price snapshots it gets from coingeckos api for a crypto coin.
 
 if you want to selfhost this bot:
