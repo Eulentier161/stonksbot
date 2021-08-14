@@ -40,6 +40,6 @@ if __name__ == "__main__":
     try:
         loop.create_task(client.run(token))
         loop.run_forever()
-    except Exception as aya:
-        print(aya)
+    except Exception as e:
+        print(e)
     

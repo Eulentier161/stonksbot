@@ -12,7 +12,7 @@ DATABASE_PASSWORD = _database['password']
 DATABASE_NAME =     _database['name']
 DATABASE_ADDRESS =  _database['address']
 DATABASE_PORT =     _database['port']
-VERBOSE_LOG =       True
+VERBOSE_LOG =       False
 
 engine = engine.create_engine(f'postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_ADDRESS}:{DATABASE_PORT}/{DATABASE_NAME}', echo=VERBOSE_LOG)
 

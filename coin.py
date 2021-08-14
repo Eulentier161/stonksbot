@@ -22,8 +22,6 @@ async def get_targets(bot: discord.Client) -> dict:
 
 async def start_schedule(bot: discord.Client, cg: CoinGeckoAPI):
     targets = await get_targets(bot)
-    print(targets)
     for target in targets:
-        print(target)
         await publish_emote(cg=cg, bot=bot, channel=target['channel'], crypto=target['coin'])
         
