@@ -1,42 +1,45 @@
-import discord
-from pycoingecko import CoinGeckoAPI
+try:
+    import uvloop
+    uvloop.install()
+except ImportError:
+    print("Couldn't install uvloop, falling back to the slower asyncio event loop")
 import asyncio
+from discord.ext.commands import Bot
+from discord_slash import SlashCommand
+from discord_slash.context import SlashContext
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from pycoingecko.api import CoinGeckoAPI
 import yaml
+from cogs import settings
+import coin
 
-client = discord.Client()
+client = Bot(command_prefix="$")
+slash = SlashCommand(client, sync_commands=True)
 cg = CoinGeckoAPI()
+scheduler = AsyncIOScheduler()
 with open('config.yaml', 'r') as f:
-    config = yaml.safe_load(f)
+    token = yaml.safe_load(f)['token']
 
 @client.event
-async def on_ready():
+async def on_ready():    
     print("Ready!")
-    while True:
-        await publish_emote()
-        await asyncio.sleep(3600)
+    
+@client.event
+async def on_slash_command_error(ctx: SlashContext, ex: Exception):
+    await ctx.send(f"```py\n{ex}\n```", hidden=True)
 
-async def get_channels() -> list:
-    channels = []
-    for channel_id in config['channels']:
-        channel = None
-        try:
-            channel = await client.fetch_channel(channel_id)
-        except:
-            continue
-        finally:
-            if channel:
-                channels.append(channel)     
-    return channels
-        
-async def publish_emote():
-    chart = cg.get_coin_market_chart_by_id(config['crypto'], "usd", 1)['prices']
-    channels = await get_channels()
-    for channel in channels:
-        if chart[-1][1] > chart[-12][1]:
-            await channel.send("📈")
-        else:
-            await channel.send("📉")
-
-if __name__ == "__main__":
-    client.run(config['token'])
+if __name__ == "__main__":    
+    # load cogs
+    client.add_cog(settings.SettingsCog(client))
+    
+    # add job
+    scheduler.add_job(coin.start_schedule, 'cron', hour="*", args=[client,cg])
+    scheduler.start()
+    
+    loop = asyncio.get_event_loop()
+    try:
+        loop.create_task(client.run(token))
+        loop.run_forever()
+    except Exception as aya:
+        print(aya)
     
