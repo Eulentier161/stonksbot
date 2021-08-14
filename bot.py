@@ -40,7 +40,7 @@ if __name__ == "__main__":
     client.add_cog(settings.SettingsCog(client))
     
     # add job
-    scheduler.add_job(coin.start_schedule, 'cron', minute="*", args=[client,cg])
+    scheduler.add_job(coin.start_schedule, 'cron', hour="*", args=[client,cg])
     scheduler.start()
     
     loop = asyncio.get_event_loop()
