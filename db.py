@@ -59,6 +59,10 @@ def get_all_channels() -> list:
     with Session() as session:
         return [channel.__dict__ for channel in session.query(ChannelTable).all()]
     
-def get_all_guild_channels(guild_id) -> list:
+def get_all_guild_channels(guild_id: int) -> list:
     with Session() as session:
         return [channel.__dict__ for channel in session.query(ChannelTable).filter(ChannelTable.guild_id==guild_id)]
+    
+def get_channel(channel_id: int) -> dict:
+    with Session() as session:
+        return session.query(ChannelTable).get(channel_id).__dict__

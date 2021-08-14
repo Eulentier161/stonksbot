@@ -7,7 +7,7 @@ import asyncio
 import discord
 from discord.ext.commands import Bot
 from discord_slash import SlashCommand
-from discord_slash.context import SlashContext
+from discord_slash.context import ComponentContext, SlashContext
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pycoingecko.api import CoinGeckoAPI
 import yaml
@@ -30,12 +30,17 @@ async def on_ready():
 async def on_slash_command_error(ctx: SlashContext, ex: Exception):
     await ctx.send(f"```py\n{ex}\n```", hidden=True)
 
+@slash.component_callback()
+async def info_btn(ctx: ComponentContext):
+    await coin.info_callback(ctx, cg)
+
+
 if __name__ == "__main__":    
     # load cogs
     client.add_cog(settings.SettingsCog(client))
     
     # add job
-    scheduler.add_job(coin.start_schedule, 'cron', hour="*", args=[client,cg])
+    scheduler.add_job(coin.start_schedule, 'cron', minute="*", args=[client,cg])
     scheduler.start()
     
     loop = asyncio.get_event_loop()

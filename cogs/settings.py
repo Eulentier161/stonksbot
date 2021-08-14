@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash.context import SlashContext
+from discord_slash.model import ButtonStyle
+from discord_slash.utils.manage_components import create_actionrow, create_button
 from pycoingecko import CoinGeckoAPI
 import db
 import os
@@ -18,14 +20,7 @@ class SettingsCog(commands.Cog):
     @commands.has_guild_permissions(manage_guild=True)
     async def addit_cmd(self, ctx: SlashContext, channel: discord.TextChannel, target_coin: str):
         if target_coin not in [coin['id'] for coin in self.coins_list]:
-            text = ""
-            for coin in self.coins_list:
-                text += f"id: {coin['id']}, name: {coin['name']}, symbol: {coin['symbol']}\n"
-            with open("ids.txt", "a") as f:
-                f.write(text)
-            with open("ids.txt", "rb") as f:
-                await ctx.reply(f"`{target_coin}` is not a valid id. here is a textfile with all available coins and their corresponding ids.", file=discord.File(f, "ids.txt"))
-            os.remove("ids.txt")
+            await ctx.reply(f"`{target_coin}` is not a valid id. https://api.coingecko.com/api/v3/coins/list", hidden=True)
             return
         db.create_or_update_channel(ctx.guild.id, channel.id, target_coin)
         await ctx.reply(f"ill post {target_coin} infos in {channel.mention} from now on. remove this rule with `/remove <channel>`")
