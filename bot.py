@@ -4,6 +4,7 @@ try:
 except ImportError:
     print("Couldn't install uvloop, falling back to the slower asyncio event loop")
 import asyncio
+import discord
 from discord.ext.commands import Bot
 from discord_slash import SlashCommand
 from discord_slash.context import SlashContext
@@ -13,7 +14,7 @@ import yaml
 from cogs import settings
 import coin
 
-client = Bot(command_prefix="$")
+client = Bot(command_prefix="$", help_command=None)
 slash = SlashCommand(client, sync_commands=True)
 cg = CoinGeckoAPI()
 scheduler = AsyncIOScheduler()
@@ -21,7 +22,8 @@ with open('config.yaml', 'r') as f:
     token = yaml.safe_load(f)['token']
 
 @client.event
-async def on_ready():    
+async def on_ready():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="the stonks market"))
     print("Ready!")
     
 @client.event
