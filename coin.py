@@ -9,8 +9,8 @@ async def publish_emote(cg: CoinGeckoAPI, bot: discord.Client, channel: discord.
 
 async def get_targets(bot: discord.Client) -> dict:
     targets = []
-    disc_channel = None
     for target in db.get_all_channels():
+        disc_channel = None
         try:
             disc_channel: discord.TextChannel = await bot.fetch_channel(target['channel_id'])
         except:
