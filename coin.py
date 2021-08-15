@@ -18,7 +18,7 @@ async def publish_emote(cg: CoinGeckoAPI, channel: discord.TextChannel, crypto: 
     await channel.send("\U0001f4c8" if chart[-1][1] > chart[-12][1] else "\U0001f4c9", components=[action_row])
     
 async def info_callback(ctx: ComponentContext, cg: CoinGeckoAPI):
-    await ctx.defer()
+    await ctx.defer(hidden=True)
 
     db_guild_channel = db.get_channel(ctx.origin_message.channel.id)
     
