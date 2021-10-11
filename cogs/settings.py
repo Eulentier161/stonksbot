@@ -42,6 +42,43 @@ class SettingsCog(commands.Cog):
             disc_channel: discord.TextChannel = self.bot.get_channel(channel['channel_id'])
             response += f"{disc_channel.mention}: {channel['coin']}\n"
         await ctx.send(response) if response else await ctx.send("None")
+
+    @cog_ext.cog_slash(name="price", description="get infos about a coin")
+    async def price_cmd(self, ctx: SlashContext, coin: str):
+        coin_list = self.cg.get_coins_list()
+        found = False
+        for entry in coin_list:
+            if entry["name"].lower() == coin or entry["symbol"].lower() == coin:
+                coin = {
+                    "id": entry["id"], 
+                    "name": entry["name"], 
+                    "symbol": entry["symbol"]
+                }
+                found = True
+                break
+        if not found:
+            ctx.send(f"i cant find {coin}", hidden=True)
+            return
+        coin_infos = self.cg.get_coin_by_id(coin["id"])
+        description=f"""[{coin['symbol']} Blockchain]({coin_infos['links']['blockchain_site'][0]})
+
+**Current Price:** ```
+{round(coin_infos['market_data']['current_price']['eur'], 2)}€
+${round(coin_infos['market_data']['current_price']['usd'], 2)}
+{round(coin_infos['market_data']['current_price']['sats'], 2)} satoshi
+```
+**Price Changes:** ```
+24h:  {round(coin_infos['market_data']['price_change_percentage_24h'], 2)}%
+7d:   {round(coin_infos['market_data']['price_change_percentage_7d'], 2)}%
+14d:  {round(coin_infos['market_data']['price_change_percentage_14d'], 2)}%
+30d:  {round(coin_infos['market_data']['price_change_percentage_30d'], 2)}%
+60d:  {round(coin_infos['market_data']['price_change_percentage_60d'], 2)}%
+200d: {round(coin_infos['market_data']['price_change_percentage_200d'], 2)}%
+1y:   {round(coin_infos['market_data']['price_change_percentage_1y'], 2)}%
+```"""
+        embed = discord.Embed(title=coin["name"], url=coin_infos['links']['homepage'][0], description=description)
+        embed.set_thumbnail(url=coin_infos['image']['large'])
+        await ctx.send(embed=embed)
         
     @commands.command("list_all", hidden=True)
     @commands.is_owner()
