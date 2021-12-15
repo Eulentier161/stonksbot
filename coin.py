@@ -8,9 +8,17 @@ import db
 
 
 async def publish_emote(cg: CoinGeckoAPI, channel: discord.TextChannel, crypto: str):
-    chart = cg.get_coin_market_chart_by_id(crypto, "usd", 1)["prices"]
-    action_row = create_actionrow(create_button(style=ButtonStyle.blue, custom_id="info_btn", label=f"{crypto}"))
-    await channel.send("\U0001f4c8" if chart[-1][1] > chart[-12][1] else "\U0001f4c9", components=[action_row])
+    chart = cg.get_coin_market_chart_by_id(crypto, "eur", 1)["prices"]
+    current_price = chart[-1][1]
+    action_row = create_actionrow(
+        create_button(style=ButtonStyle.blue, custom_id="info_btn", label=f"{crypto}")
+    )
+    await channel.send(
+        f"\U0001f4c8 {round(current_price)}"
+        if current_price > chart[-12][1]
+        else f"\U0001f4c9 {round(current_price)}",
+        components=[action_row],
+    )
 
 
 async def info_callback(ctx: ComponentContext, cg: CoinGeckoAPI):
